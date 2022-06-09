@@ -5,7 +5,9 @@
     <RootNamespace>backend_function</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1"/>
+    <PackageReference Include="Polly" Version="7.2.3"/>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.27.2"/>
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
