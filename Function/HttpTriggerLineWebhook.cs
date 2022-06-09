@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,22 +16,30 @@ namespace Com.ZoneIct
     {
         [FunctionName("HttpTriggerLineWebhook")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]
+        [Queue("normal")] IAsyncCollector<string> queue,
+        ILogger log, HttpRequest req)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            var secret = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("CHANNEL_SECRET"));
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var body = Encoding.UTF8.GetBytes(requestBody);
+            var hmac = new HMACSHA256(secret);
+            var hash = hmac.ComputeHash(body, 0, body.Length);
+            var hash64 = Convert.ToBase64String(hash);
 
-            string name = req.Query["name"];
+            var signature = req.Headers["X-Line-Signature"];
+            if (signature != hash64)
+                return new BadRequestObjectResult("Signature verification failed");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+            log.LogInformation($"request = {requestBody}");
+            dynamic records = JsonConvert.DeserializeObject(requestBody);
+            foreach (dynamic data in records.events)
+            {
+                // add the specific values to the source
+                data.lineId = data.source.userId;
+                queue.AddAsync(JsonConvert.SerializeObject(data));
+            }
+            return (ActionResult)new OkObjectResult(string.Empty);
         }
     }
 }
