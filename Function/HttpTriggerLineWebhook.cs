@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -14,11 +15,11 @@ namespace Com.ZoneIct
 {
     public static class HttpTriggerLineWebhook
     {
+
         [FunctionName("HttpTriggerLineWebhook")]
         public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]
-        [Queue("normal")] IAsyncCollector<string> queue,
-        ILogger log, HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+        ILogger log)
         {
             var secret = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("CHANNEL_SECRET"));
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -37,7 +38,10 @@ namespace Com.ZoneIct
             {
                 // add the specific values to the source
                 data.lineId = data.source.userId;
-                queue.AddAsync(JsonConvert.SerializeObject(data));
+
+                QueueClient queue = new QueueClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "normal");
+                await queue.CreateAsync();
+                await queue.SendMessageAsync(JsonConvert.SerializeObject(data));
             }
             return (ActionResult)new OkObjectResult(string.Empty);
         }
