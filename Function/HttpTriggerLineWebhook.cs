@@ -41,6 +41,7 @@ namespace Com.ZoneIct
                 QueueClient queue = new QueueClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "message");
                 await queue.CreateAsync();
                 await queue.SendMessageAsync(JsonConvert.SerializeObject(data));
+                log.LogInformation($"data = {JsonConvert.SerializeObject(data)}");
             }
             return (ActionResult)new OkObjectResult(string.Empty);
         }
