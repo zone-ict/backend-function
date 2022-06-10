@@ -38,7 +38,7 @@ namespace Com.ZoneIct
                 // add the specific values to the source
                 data.lineId = data.source.userId;
 
-                QueueClient queue = new QueueClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "normal");
+                QueueClient queue = new QueueClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "message");
                 await queue.CreateAsync();
                 await queue.SendMessageAsync(JsonConvert.SerializeObject(data));
             }
