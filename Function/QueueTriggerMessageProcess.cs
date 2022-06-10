@@ -8,7 +8,7 @@ namespace Com.ZoneIct
     {
         [FunctionName("QueueTriggerMessageProcess")]
         public static async Task Run(
-            [QueueTrigger("normal", Connection = "AzureWebJobsStorage")] dynamic data,
+            [QueueTrigger("message", Connection = "AzureWebJobsStorage")] dynamic data,
             ILogger log)
         {
             #region initialize

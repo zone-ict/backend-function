@@ -10,7 +10,7 @@ namespace Com.ZoneIct
         static string _queue = Environment.GetEnvironmentVariable("");
         [FunctionName("QueueTriggerMessageError")]
         public static async Task Run(
-            [QueueTrigger("error", Connection = "AzureWebJobsStorage")] dynamic data,
+            [QueueTrigger("message-poison", Connection = "AzureWebJobsStorage")] dynamic data,
             ILogger log)
         {
             #region initialize
