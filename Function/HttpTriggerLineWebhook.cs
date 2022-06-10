@@ -15,7 +15,6 @@ namespace Com.ZoneIct
 {
     public static class HttpTriggerLineWebhook
     {
-
         [FunctionName("HttpTriggerLineWebhook")]
         public static async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
