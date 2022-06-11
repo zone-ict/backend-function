@@ -7,7 +7,6 @@ namespace Com.ZoneIct
 {
     public static class QueueTriggerMessageError
     {
-        static string _queue = Environment.GetEnvironmentVariable("");
         [FunctionName("QueueTriggerMessageError")]
         public static async Task Run(
             [QueueTrigger("message-poison", Connection = "AzureWebJobsStorage")] dynamic data,

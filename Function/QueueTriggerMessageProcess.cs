@@ -11,6 +11,7 @@ namespace Com.ZoneIct
             [QueueTrigger("message", Connection = "AzureWebJobsStorage")] dynamic data,
             ILogger log)
         {
+            log.LogInformation("start ** ");
             #region initialize
             string type = data.type;
 
