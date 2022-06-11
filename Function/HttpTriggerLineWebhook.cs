@@ -18,6 +18,7 @@ namespace Com.ZoneIct
         [FunctionName("HttpTriggerLineWebhook")]
         public static async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+        [Queue("message"), StorageAccount("AzureWebJobsStorage")] IAsyncCollector<string> queue,
         ILogger log)
         {
             var secret = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("CHANNEL_SECRET"));
@@ -37,11 +38,7 @@ namespace Com.ZoneIct
             {
                 // add the specific values to the source
                 data.lineId = data.source.userId;
-
-                QueueClient queue = new QueueClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "message");
-                await queue.CreateAsync();
-                await queue.SendMessageAsync(JsonConvert.SerializeObject(data));
-                log.LogInformation($"data = {JsonConvert.SerializeObject(data)}");
+                queue.AddAsync(JsonConvert.SerializeObject(data));
             }
             return (ActionResult)new OkObjectResult(string.Empty);
         }
