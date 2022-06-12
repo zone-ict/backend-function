@@ -104,8 +104,12 @@ namespace Com.ZoneIct
                 state.Session.language = user.Language;
                 var welcome = "こんにちは、メッセージを入力してください";
                 if (user.Language != "ja")
-                    welcome = await AzureClient.Translate(welcome, user.Language);
-                await LineClient.ReplyMessage(state, welcome);
+                {
+                    var translated = await AzureClient.Translate(welcome, user.Language);
+                    await LineClient.ReplyMessage(state, new string[] { welcome, translated });
+                }
+                else
+                    await LineClient.ReplyMessage(state, welcome);
             }
         }
 

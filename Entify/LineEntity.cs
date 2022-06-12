@@ -76,7 +76,7 @@ namespace Com.ZoneIct
     {
         public BotSender()
         {
-            IconUrl = "https://previews.123rf.com/images/nastyatrel/nastyatrel2006/nastyatrel200600035/149438272-flat-vector-illustration-chat-bot-icon-flat-line-style-vector-.jpg";
+            IconUrl = $"{Constants.ImagePath}bot.png";
         }
     }
 
