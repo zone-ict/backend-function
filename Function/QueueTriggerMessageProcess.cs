@@ -11,7 +11,6 @@ namespace Com.ZoneIct
             [QueueTrigger("message", Connection = "AzureWebJobsStorage")] dynamic data,
             ILogger log)
         {
-            log.LogInformation("start ** ");
             #region initialize
             string type = data.type;
 
@@ -101,6 +100,12 @@ namespace Com.ZoneIct
             await Task.Delay(0);
             if (type == "follow")
             {
+                var user = await LineClient.GetUserProfile(state, state.LineId);
+                state.Session.language = user.Language;
+                var welcome = "こんにちは、メッセージを入力してください";
+                if (user.Language != "ja")
+                    welcome = await AzureClient.Translate(welcome, user.Language);
+                await LineClient.ReplyMessage(state, welcome);
             }
         }
 

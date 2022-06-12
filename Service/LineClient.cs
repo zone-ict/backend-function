@@ -135,7 +135,7 @@ namespace Com.ZoneIct
             {
                 var res = await CallLineApi(state, null, HttpMethod.Get, $"https://api.line.me/v2/bot/profile/{lineId}");
                 dynamic profile = JsonConvert.DeserializeObject(res);
-                return new LineProfile { Name = profile.displayName, Url = profile.pictureUrl };
+                return new LineProfile { Name = profile.displayName, Url = profile.pictureUrl, Language = profile.language };
             }
             catch (UserNotFoundException)
             {
