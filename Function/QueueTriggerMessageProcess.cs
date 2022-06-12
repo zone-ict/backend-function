@@ -26,8 +26,8 @@ namespace Com.ZoneIct
             state.Sender = new BotSender();
 
             var sessionId = $"{state.LineId}";
-            state.Session = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.Id == sessionId);
-            state.Session = state.Session ?? new UserSession { Id = sessionId };
+            state.Session = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == sessionId);
+            state.Session = state.Session ?? new UserSession { id = sessionId };
 
             if (!await IsIgnoreType(state, type) && !await DevUtil.ProcessMessage(state))
             {
@@ -40,7 +40,7 @@ namespace Com.ZoneIct
                 else
                     await SendMessage(state);
             }
-            state.Session.Previous = state.Text;
+            state.Session.previous = state.Text;
             await CosmosClient<UserSession>.UpsertDocumentAsync(state.Session);
         }
         static async Task<bool> IsIgnoreType(State state, string type)
@@ -79,7 +79,7 @@ namespace Com.ZoneIct
         {
             string postback = data.postback.data;
             var str = postback.Split(',');
-            var user = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.Id == str[1]);
+            var user = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == str[1]);
 
             if (user == null)
                 await LineClient.ReplyMessage(state, "ユーザーが見つかりません。");
@@ -101,7 +101,7 @@ namespace Com.ZoneIct
             if (type == "follow")
             {
                 var user = await LineClient.GetUserProfile(state, state.LineId);
-                state.Session.Language = user.Language;
+                state.Session.language = user.Language;
                 var welcome = "こんにちは、メッセージを入力してください";
                 if (user.Language != "ja")
                 {
