@@ -9,16 +9,9 @@ namespace Com.ZoneIct
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class UserSession
     {
-        public string id { get; set; }
-        public string previous { get; set; }
-        public string command { get; set; }
-        public string language { get; set; }
-    }
-    public class CustomDateTimeConverter : IsoDateTimeConverter
-    {
-        public CustomDateTimeConverter()
-        {
-            base.DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffffffK";
-        }
+        public string Id { get; set; }
+        public string Previous { get; set; }
+        public string Command { get; set; }
+        public string Language { get; set; }
     }
 }
