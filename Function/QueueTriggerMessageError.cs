@@ -25,7 +25,6 @@ namespace Com.ZoneIct
             #endregion
 
             state.Logger.LogInformation($"error input = {data.ToString()}");
-            state.Sender = new BotSender();
 
             switch (type)
             {

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Com.ZoneIct
 {
@@ -23,7 +24,6 @@ namespace Com.ZoneIct
             };
             #endregion
             state.Logger.LogInformation($"input = {data.ToString()}");
-            state.Sender = new BotSender();
 
             var sessionId = $"{state.LineId}";
             state.Session = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == sessionId);
@@ -71,8 +71,37 @@ namespace Com.ZoneIct
 
         static async Task SendMessage(State state)
         {
-            // if (state.Text == "abc")
-            await LineClient.ReplyMessage(state, state.Text + "、だよ");
+            var businessSession = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == Constants.BusinessId);
+            if (state.IsBusinessId)
+            {
+                var reply = new SetReplyMessage(businessSession.talkId);
+                if (businessSession.talkLanguage == "ja")
+                {
+                    //                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), reply }, businessSession.talkId);
+                    await LineClient.PushMessage(state, state.Text, businessSession.talkId);
+                }
+                else
+                {
+                    var translated = await AzureClient.Translate(state.Text, businessSession.talkLanguage);
+                    //                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, businessSession.talkId);
+                    await LineClient.PushMessage(state, new string[] { state.Text, translated }, businessSession.talkId);
+                }
+            }
+            else
+            {
+                if (businessSession.talkLanguage == "ja")
+                {
+                    await LineClient.PushMessage(state, state.Text, Constants.BusinessId);
+                }
+                else
+                {
+                    var translated = await AzureClient.Translate(state.Text, businessSession.talkLanguage);
+                    await LineClient.PushMessage(state, new string[] { state.Text, translated }, Constants.BusinessId);
+                }
+                businessSession.talkId = state.LineId;
+                businessSession.talkLanguage = state.LineId;
+                await CosmosClient<UserSession>.UpsertDocumentAsync(businessSession);
+            }
         }
 
         static async Task Postback(dynamic data, State state)
@@ -102,14 +131,18 @@ namespace Com.ZoneIct
             {
                 var user = await LineClient.GetUserProfile(state, state.LineId);
                 state.Session.language = user.Language;
-                var welcome = "こんにちは、メッセージを入力してください";
-                if (user.Language != "ja")
+                state.Session.name = user.Name;
+
+                dynamic obj = JsonConvert.DeserializeObject(Lang.Code);
+                var lang = obj[user.Language].name;
+                var welcome = $"こんにちは\n{lang}でチャットができます!";
+                if (user.Language == "ja")
+                    await LineClient.ReplyMessage(state, welcome);
+                else
                 {
                     var translated = await AzureClient.Translate(welcome, user.Language);
                     await LineClient.ReplyMessage(state, new string[] { welcome, translated });
                 }
-                else
-                    await LineClient.ReplyMessage(state, welcome);
             }
         }
 

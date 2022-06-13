@@ -9,5 +9,6 @@ namespace Com.ZoneIct
         public const string ImagePath = "https://zoneicta0ca.blob.core.windows.net/web/resources/images/";
         public const string CosmosDB = "zone-ict-app";
         public const string CosmosDBConnection = "COSMOSDB_CONNECTION";
+        public const string BusinessId = "U249e524d2a5888f315e8b3d4f5090b50";
     }
 }

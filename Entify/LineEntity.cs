@@ -25,6 +25,52 @@ namespace Com.ZoneIct
             Text = text;
         }
     }
+    public class SetReplyMessage : Message
+    {
+        public SetReplyMessage(string replyTo)
+        {
+            Type = "template";
+            AltText = $"{replyTo} さんに返信";
+            Template = new Template
+            {
+                Type = "buttons",
+                Text = $"{replyTo} さんに返信",
+                Actions = new MessageAction[] {
+                    new MessageAction {
+                        Type = "postback",
+                        Label = "設定",
+                        Data = $"replyTo={replyTo}"
+                    }
+                }
+            };
+        }
+    }
+
+    public class ConfirmMessage : Message
+    {
+        public ConfirmMessage(string text, string yes = "はい", string no = "いいえ")
+        {
+            Type = "template";
+            AltText = text;
+            Template = new Template
+            {
+                Type = "confirm",
+                Text = text,
+                Actions = new MessageAction[] {
+                    new MessageAction {
+                        Type = "message",
+                        Label = yes,
+                        Text = yes
+                    },
+                    new MessageAction {
+                        Type = "message",
+                        Label = no,
+                        Text = no
+                    }
+                }
+            };
+        }
+    }
 
     public class Content
     {

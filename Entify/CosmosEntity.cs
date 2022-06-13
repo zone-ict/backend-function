@@ -13,6 +13,9 @@ namespace Com.ZoneIct
         public string previous { get; set; }
         public string command { get; set; }
         public string language { get; set; }
+        public string name { get; set; }
+        public string talkId { get; set; }
+        public string talkLanguage { get; set; }
     }
     public class CustomDateTimeConverter : IsoDateTimeConverter
     {
