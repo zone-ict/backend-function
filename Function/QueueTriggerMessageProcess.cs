@@ -76,26 +76,20 @@ namespace Com.ZoneIct
             {
                 var reply = new SetReplyMessage(businessSession.talkId);
                 if (businessSession.talkLanguage == "ja")
-                {
-                    //                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), reply }, businessSession.talkId);
-                    await LineClient.PushMessage(state, state.Text, businessSession.talkId);
-                }
+                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), reply }, businessSession.talkId);
                 else
                 {
                     var translated = await AzureClient.Translate(state.Text, businessSession.talkLanguage);
-                    //                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, businessSession.talkId);
-                    await LineClient.PushMessage(state, new string[] { state.Text, translated }, businessSession.talkId);
+                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, businessSession.talkId);
                 }
             }
             else
             {
                 if (businessSession.talkLanguage == "ja")
-                {
                     await LineClient.PushMessage(state, state.Text, Constants.BusinessId);
-                }
                 else
                 {
-                    var translated = await AzureClient.Translate(state.Text, state.Session.language);
+                    var translated = await AzureClient.Translate(state.Text, "ja");
                     await LineClient.PushMessage(state, new string[] { state.Text, translated }, Constants.BusinessId);
                 }
                 businessSession.talkId = state.LineId;
