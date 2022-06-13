@@ -87,7 +87,8 @@ namespace Com.ZoneIct
                 var reply = new ReplyButtonMessage(state.Session.name, state.LineId);
                 if (businessSession.talkLanguage == "ja")
                 {
-                    if (businessSession.talkId != state.LineId)
+                    if (true)
+                        //                    if (businessSession.talkId != state.LineId)
                         await LineClient.PushMessage(state, new Message[] { new Message(state.Text), reply }, Constants.BusinessId);
                     else
                         await LineClient.PushMessage(state, state.Text, Constants.BusinessId);
@@ -95,7 +96,8 @@ namespace Com.ZoneIct
                 else
                 {
                     var translated = await AzureClient.Translate(state.Text, "ja");
-                    if (businessSession.talkId != state.LineId)
+                    if (true)
+                        //                    if (businessSession.talkId != state.LineId)
                         await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, Constants.BusinessId);
                     else
                         await LineClient.PushMessage(state, new string[] { state.Text, translated }, Constants.BusinessId);
