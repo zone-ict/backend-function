@@ -25,16 +25,16 @@ namespace Com.ZoneIct
             Text = text;
         }
     }
-    public class SetReplyMessage : Message
+    public class ReplyButtonMessage : Message
     {
-        public SetReplyMessage(string replyTo)
+        public ReplyButtonMessage(string name, string replyTo)
         {
             Type = "template";
             AltText = $"{replyTo} さんに返信";
             Template = new Template
             {
                 Type = "buttons",
-                Text = $"{replyTo} さんに返信",
+                Text = $"{name} さんに返信",
                 Actions = new MessageAction[] {
                     new MessageAction {
                         Type = "postback",

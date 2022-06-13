@@ -74,23 +74,31 @@ namespace Com.ZoneIct
             var businessSession = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == Constants.BusinessId);
             if (state.IsBusinessId)
             {
-                var reply = new SetReplyMessage(businessSession.talkId);
                 if (businessSession.talkLanguage == "ja")
-                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), reply }, businessSession.talkId);
+                    await LineClient.PushMessage(state, state.Text, businessSession.talkId);
                 else
                 {
                     var translated = await AzureClient.Translate(state.Text, businessSession.talkLanguage);
-                    await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, businessSession.talkId);
+                    await LineClient.PushMessage(state, new string[] { state.Text, translated }, businessSession.talkId);
                 }
             }
             else
             {
+                var reply = new ReplyButtonMessage(state.Session.name, state.LineId);
                 if (businessSession.talkLanguage == "ja")
-                    await LineClient.PushMessage(state, state.Text, Constants.BusinessId);
+                {
+                    if (businessSession.talkId != state.LineId)
+                        await LineClient.PushMessage(state, new Message[] { new Message(state.Text), reply }, Constants.BusinessId);
+                    else
+                        await LineClient.PushMessage(state, state.Text, Constants.BusinessId);
+                }
                 else
                 {
                     var translated = await AzureClient.Translate(state.Text, "ja");
-                    await LineClient.PushMessage(state, new string[] { state.Text, translated }, Constants.BusinessId);
+                    if (businessSession.talkId != state.LineId)
+                        await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, Constants.BusinessId);
+                    else
+                        await LineClient.PushMessage(state, new string[] { state.Text, translated }, Constants.BusinessId);
                 }
                 businessSession.talkId = state.LineId;
                 businessSession.talkLanguage = state.Session.language;
@@ -101,7 +109,7 @@ namespace Com.ZoneIct
         static async Task Postback(dynamic data, State state)
         {
             string postback = data.postback.data;
-            var str = postback.Split(',');
+            var str = postback.Split('=');
             var user = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == str[1]);
 
             if (user == null)
@@ -110,9 +118,12 @@ namespace Com.ZoneIct
             {
                 switch (str[0])
                 {
-                    case "A":
-                        break;
-                    case "B":
+                    case "replyTo":
+                        var me = await CosmosClient<UserSession>.SingleOrDefaultAsync(x => x.id == state.LineId);
+                        me.talkId = user.id;
+                        me.talkLanguage = user.language;
+                        await CosmosClient<UserSession>.UpsertDocumentAsync(me);
+                        await LineClient.ReplyMessage(state, "設定しました。");
                         break;
                 }
             }
