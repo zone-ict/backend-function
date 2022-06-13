@@ -95,11 +95,11 @@ namespace Com.ZoneIct
                 }
                 else
                 {
-                    var translated = await AzureClient.Translate(state.Text, );
+                    var translated = await AzureClient.Translate(state.Text, state.Session.language);
                     await LineClient.PushMessage(state, new string[] { state.Text, translated }, Constants.BusinessId);
                 }
                 businessSession.talkId = state.LineId;
-                businessSession.talkLanguage = ;
+                businessSession.talkLanguage = state.Session.language;
                 await CosmosClient<UserSession>.UpsertDocumentAsync(businessSession);
             }
         }
