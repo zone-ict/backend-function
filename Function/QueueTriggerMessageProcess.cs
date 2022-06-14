@@ -60,6 +60,11 @@ namespace Com.ZoneIct
                         await LineClient.ReplyMessage(state, noreply);
                         return true;
                     }
+                    else if (state.Text == "Chat")
+                    {
+                        await StartChat(state);
+                        return true;
+                    }
                     break;
 
                 default:
@@ -134,20 +139,24 @@ namespace Com.ZoneIct
             await Task.Delay(0);
             if (type == "follow")
             {
-                var user = await LineClient.GetUserProfile(state, state.LineId);
-                state.Session.language = user.Language;
-                state.Session.name = user.Name;
+                await StartChat(state);
+            }
+        }
+        static async Task StartChat(State state)
+        {
+            var user = await LineClient.GetUserProfile(state, state.LineId);
+            state.Session.language = user.Language;
+            state.Session.name = user.Name;
 
-                dynamic obj = JsonConvert.DeserializeObject(Lang.Code);
-                var lang = obj[user.Language].name;
-                var welcome = $"こんにちは\n{lang}でチャットができます!";
-                if (user.Language == "ja")
-                    await LineClient.ReplyMessage(state, welcome);
-                else
-                {
-                    var translated = await AzureClient.Translate(welcome, user.Language);
-                    await LineClient.ReplyMessage(state, new string[] { welcome, translated });
-                }
+            dynamic obj = JsonConvert.DeserializeObject(Lang.Code);
+            var lang = obj[user.Language].name;
+            var welcome = $"こんにちは\n{lang}でチャットができます!";
+            if (user.Language == "ja")
+                await LineClient.ReplyMessage(state, welcome);
+            else
+            {
+                var translated = await AzureClient.Translate(welcome, user.Language);
+                await LineClient.ReplyMessage(state, new string[] { welcome, translated });
             }
         }
 
