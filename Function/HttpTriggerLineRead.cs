@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;

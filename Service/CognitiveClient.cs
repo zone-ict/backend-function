@@ -9,7 +9,7 @@ using Polly;
 
 namespace Com.ZoneIct
 {
-    public class AzureClient
+    public class CognitiveClient
     {
         static readonly string key = Environment.GetEnvironmentVariable("COGNITIVE_TRANSLATION_KEY");
         static readonly string location = "japaneast";

@@ -83,7 +83,7 @@ namespace Com.ZoneIct
                     await LineClient.PushMessage(state, state.Text, businessSession.talkId);
                 else
                 {
-                    var translated = await AzureClient.Translate(state.Text, businessSession.talkLanguage);
+                    var translated = await CognitiveClient.Translate(state.Text, businessSession.talkLanguage);
                     await LineClient.PushMessage(state, new string[] { state.Text, translated }, businessSession.talkId);
                 }
             }
@@ -99,7 +99,7 @@ namespace Com.ZoneIct
                 }
                 else
                 {
-                    var translated = await AzureClient.Translate(state.Text, "ja");
+                    var translated = await CognitiveClient.Translate(state.Text, "ja");
                     if (businessSession.talkId != state.LineId)
                         await LineClient.PushMessage(state, new Message[] { new Message(state.Text), new Message(translated), reply }, Constants.BusinessId);
                     else
@@ -155,7 +155,7 @@ namespace Com.ZoneIct
                 await LineClient.ReplyMessage(state, welcome);
             else
             {
-                var translated = await AzureClient.Translate(welcome, user.Language);
+                var translated = await CognitiveClient.Translate(welcome, user.Language);
                 await LineClient.ReplyMessage(state, new string[] { welcome, translated });
             }
         }

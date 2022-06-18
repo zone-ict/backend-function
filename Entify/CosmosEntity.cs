@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Com.ZoneIct
@@ -16,12 +13,5 @@ namespace Com.ZoneIct
         public string name { get; set; }
         public string talkId { get; set; }
         public string talkLanguage { get; set; } = "ja";
-    }
-    public class CustomDateTimeConverter : IsoDateTimeConverter
-    {
-        public CustomDateTimeConverter()
-        {
-            base.DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffffffK";
-        }
     }
 }

@@ -3,7 +3,6 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -36,7 +35,6 @@ namespace Com.ZoneIct
             dynamic records = JsonConvert.DeserializeObject(requestBody);
             foreach (dynamic data in records.events)
             {
-                // add the specific values to the source
                 data.lineId = data.source.userId;
                 queue.AddAsync(JsonConvert.SerializeObject(data));
             }
